@@ -1,7 +1,9 @@
-from playwright.sync_api import Page
 from enum import Enum
 
+from playwright.sync_api import Page
+
 class SmartphoneBrand(Enum):
+    """Enum for smartphone brands."""
     APPLE = "Apple"
     SAMSUNG = "Samsung"
     GOOGLE = "Google"
@@ -27,7 +29,7 @@ class BrowserStackDemoPage():
     def products(self):
         """Get all products."""
         return self.page.locator("div.shelf-item")
-    
+
     def filter_by_brand(self, brand: SmartphoneBrand):
         """
         Filter products by brand.
@@ -36,4 +38,3 @@ class BrowserStackDemoPage():
             brand (SmartphoneBrand): The brand to filter by.
         """
         self.page.locator("span.checkmark").filter(has_text=brand.value).click()
-

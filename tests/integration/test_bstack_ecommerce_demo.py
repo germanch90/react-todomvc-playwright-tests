@@ -6,9 +6,9 @@ from tests.pages.browserstack_demo_page import BrowserStackDemoPage, SmartphoneB
 @pytest.fixture(scope="function")
 def browserstack_demo_page(page):
     """Start each test on the BrowserStack demo ecommerce page."""
-    browserstack_demo_page = BrowserStackDemoPage(page)
-    browserstack_demo_page.navigate()
-    return browserstack_demo_page
+    demo_page = BrowserStackDemoPage(page)
+    demo_page.navigate()
+    return demo_page
 
 @pytest.fixture(scope="module")
 def smartphone_brand():
@@ -17,6 +17,7 @@ def smartphone_brand():
 
 # Now, let's create a test class for the BrowserStack demo ecommerce page.
 class TestBstackDemo:
+    """Test the BrowserStack demo ecommerce page."""
 
     def test_navigation(self, browserstack_demo_page):
         """Test that the BrowserStack demo ecommerce page can be navigated to."""
