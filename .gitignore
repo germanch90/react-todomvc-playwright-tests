@@ -3,3 +3,4 @@
 .coverage
 .vscode
 __pycache__
+tests/integration/test_example.py
