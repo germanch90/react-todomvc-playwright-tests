@@ -1,8 +1,5 @@
-# react-todomvc-playwright-tests
-Automated end-to-end tests for the TodoMVC application with React using Playwright. This repository contains a suite of Playwright scripts to ensure the functionality, user interactions, and cross-browser compatibility of the TodoMVC application implemented in React. Leverage the power of Playwright to run comprehensive tests.
-
-## Purpose
-The main purpose of this project is to learn and showcase the capabilities of Playwright. A publicly available live project has been selected so that we can focus on the features in an isolated fashion, keeping our code base simple and tidy.
+# testing-with-playwright
+Automated end-to-end tests for different applications using Playwright. The goal is to learn and master the different features of Playwright using Python and Pytest. The main purpose of this project is to learn and showcase the capabilities of Playwright. Publicly available live projects have been selected so that we can focus on the features in an isolated fashion, keeping our code base simple and tidy.
 
 ## Programming Language
 The programming language selected for this project is Python, it's a simple, readable, interpreted yet performant language. Extensively used and supported by a large and commited community.
