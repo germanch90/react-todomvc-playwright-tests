@@ -6,14 +6,13 @@ from tests.pages.TODOMVC.todo_react_page import TodoPage
 @pytest.fixture(scope="function")
 def todo_page(page: Page):
     """Start each test on the TodoMVC page."""
-    todo_page = TodoPage(page)
-    todo_page.navigate()
-    return todo_page
+    return TodoPage(page).navigate()
 
 class TestTodo:
     """Tests for the TodoMVC page."""
 
-    class TestTodo:
+    class TestStructure:
+        """Tests for the TodoMVC page structure."""
 
         def test_has_title(self, todo_page: TodoPage):
             """Test that the TodoMVC page has the correct title."""
@@ -26,17 +25,39 @@ class TestTodo:
             # Expect the todo input placeholder to be correct.
             expect(todo_page.entry).to_have_attribute("placeholder", "What needs to be done?")
 
-        def test_add_todos(self, todo_page: TodoPage):
+    class TestAdd:
+        """Tests for adding todo items."""
+
+        @pytest.mark.parametrize("todos", (["a", "b", "c"],))
+        def test_add_todos(self, todo_page: TodoPage, todos):
             """Test that todo items can be added."""
 
             # Expect the list to not exist.
             expect(todo_page.entries).not_to_be_attached()
 
             # Add todo items.
-            todo_page.add("a", "b", "c")
+            todo_page.add(*todos)
 
             # Expect the todo list to have the added items.
-            expect(todo_page.entries).to_have_text(["a", "b", "c"])
+            expect(todo_page.entries).to_have_text(todos)
+
+        def test_todos_are_incomplete_when_added(self, todo_page: TodoPage):
+            """Test that todo items are incomplete by default."""
+
+            # Add a todo item.
+            todo_page.add("a")
+
+            # Expect the toggle all checkbox to be available.
+            expect(todo_page.toggle_all_checkbox).to_be_attached()
+
+            # Expect the toggle all checkbox to be unchecked.
+            expect(todo_page.toggle_all_checkbox).not_to_be_checked()
+
+            # Expect the todo item to be incomplete.
+            expect(todo_page.get_single_todo_item("a")).not_to_have_class("completed")
+
+    class TestComplete:
+        """Tests for the toggle all checkbox."""
 
         @pytest.mark.parametrize(
             "all_todos, todo_to_complete",
@@ -64,23 +85,84 @@ class TestTodo:
             # Let's ensure it's the correct todo item.
             expect(todo_page.get_single_todo_item(todo_to_complete)).to_have_class("completed")
 
-    class TestTodoToggleAll:
-        """Tests for the toggle all checkbox."""
+        class TestCompleteAll:
+            """Tests for the toggle all checkbox."""
 
-        @pytest.mark.parametrize("all_todos", (["a", "b", "c"],))
-        def test_complete_all_from_zero(self, todo_page: TodoPage, all_todos):
-            """Test that todo items can be completed."""
+            def test_toggle_unavailable_when_empty(self, todo_page: TodoPage):
+                """Test that the toggle all checkbox is unavailable when there are no todo items."""
 
-            # all_todos = ["a", "b", "c"]
+                # Expect the toggle all checkbox to not be available.
+                expect(todo_page.toggle_all_checkbox).not_to_be_attached()
 
-            # Add todo items.
-            todo_page.add(*all_todos)
+            @pytest.mark.parametrize("all_todos", (["a"], ["a", "b", "c"]))
+            def test_toggle_available_when_at_least_one(self, todo_page: TodoPage, all_todos):
+                """Test that the toggle all checkbox is available when there is one or more todo items."""
 
-            # Expect all todo items to NOT be completed.
-            expect(todo_page.get_completed_todos()).to_have_count(0)
+                # Add a todo item.
+                todo_page.add(*all_todos)
 
-            # Complete all todo items.
-            todo_page.toggle_all()
+                # Expect the toggle all checkbox to be available.
+                expect(todo_page.toggle_all_checkbox).to_be_attached()
 
-            # Expect all todo items to be completed.
-            expect(todo_page.get_completed_todos()).to_have_count(len(all_todos))
+            @pytest.mark.parametrize("all_todos", (["a", "b", "c"],))
+            def test_complete_all_from_zero(self, todo_page: TodoPage, all_todos):
+                """Test that todo items can be completed."""
+
+                # Add todo items.
+                todo_page.add(*all_todos)
+
+                # Expect all todo items to NOT be completed.
+                expect(todo_page.get_completed_todos()).to_have_count(0)
+
+                # Complete all todo items.
+                todo_page.toggle_all()
+
+                # Expect all todo items to be completed.
+                expect(todo_page.get_completed_todos()).to_have_count(len(all_todos))
+
+                # Ensure all entries are the same amount as completed.
+                expect(todo_page.entries).to_have_count(len(all_todos))
+
+            @pytest.mark.parametrize("all_todos", (["a", "b", "c"],))
+            def test_complete_all_from_partial(self, todo_page: TodoPage, all_todos):
+                """Test that todo items can be completed, when there are already some completed."""
+
+                # Add todo items.
+                todo_page.add(*all_todos)
+
+                # Expect all todo items to NOT be completed.
+                expect(todo_page.get_completed_todos()).to_have_count(0)
+
+                # Complete the last 2 todo items.
+                todo_page.complete(*all_todos[1:])
+
+                # Expect all todo items to be completed.
+                expect(todo_page.get_completed_todos()).to_have_count(2)
+
+                # Toggle all todo items.
+                todo_page.toggle_all()
+
+                # Expect all todo items to be completed.
+                expect(todo_page.get_completed_todos()).to_have_count(len(all_todos))
+
+            @pytest.mark.parametrize("all_todos", (["a", "b", "c"],))
+            def test_toggle_all_resets_all(self, todo_page: TodoPage, all_todos):
+                """Test that the toggle all checkbox resets all todo items."""
+
+                # Add todo items.
+                todo_page.add(*all_todos)
+
+                # Expect all todo items to NOT be completed.
+                expect(todo_page.get_completed_todos()).to_have_count(0)
+
+                # Toggle all todo items.
+                todo_page.toggle_all()
+
+                # Expect all todo items to be completed.
+                expect(todo_page.get_completed_todos()).to_have_count(len(all_todos))
+
+                # Toggle all todo items.
+                todo_page.toggle_all(checked=False)
+
+                # Expect all todo items to NOT be completed.
+                expect(todo_page.get_completed_todos()).to_have_count(0)

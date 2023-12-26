@@ -21,6 +21,7 @@ class TodoPage:
     def navigate(self):
         """Navigate to the TodoMVC page."""
         self.page.goto("http://todomvc.com/examples/react/")
+        return self
 
     def add(self, *todos):
         """
@@ -49,7 +50,7 @@ class TodoPage:
             ElementHandle: The todo item.
         """
         return self.entries.filter(has_text=todo)
-    
+
     def get_completed_todos(self):
         """
         Get all completed todo items.
@@ -58,16 +59,17 @@ class TodoPage:
             ElementHandle: The completed todo items.
         """
         return self.todo_list.locator("css=li.completed")
-    
-    def complete(self, todo):
+
+    def complete(self, *todos):
         """
-        Complete a todo item.
+        Complete one or more todo items.
 
         Args:
-            todo (str): The todo item to complete.
+            todos (str): The todo item(s) to complete. Multiple todo items can be passed.
         """
-        self.get_single_todo_item(todo).get_by_role('checkbox').check()
+        for todo in todos:
+            self.get_single_todo_item(todo).get_by_role('checkbox').check()
 
-    def toggle_all(self):
+    def toggle_all(self, checked: bool=True):
         """Toggle all todo items."""
-        self.toggle_all_checkbox.check()
+        self.toggle_all_checkbox.set_checked(checked)
