@@ -1,6 +1,6 @@
 import pytest
 from playwright.sync_api import expect
-from tests.pages.browserstack_demo_page import BrowserStackDemoPage, SmartphoneBrand
+from tests.pages.BrowserStackDemo.browserstack_demo_page import BrowserStackDemoPage, SmartphoneBrand
 
 # Firstly, let's create a fixture that will be used to start each test on the BrowserStack demo ecommerce page.
 @pytest.fixture(scope="function")

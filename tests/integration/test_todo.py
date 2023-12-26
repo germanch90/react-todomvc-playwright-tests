@@ -1,7 +1,7 @@
 import pytest
 from playwright.sync_api import Page, expect
 
-from tests.pages.todo_react_page import TodoPage
+from tests.pages.TODOMVC.todo_react_page import TodoPage
 
 @pytest.fixture(scope="function")
 def todo_page(page: Page):
